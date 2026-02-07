@@ -25,11 +25,9 @@ public class totallyFunctioning extends LinearOpMode {
     
     // The specific speeds you wanted to cycle through
     double[] outtakeRPMs = {
-        0, 1500, 2000, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 
+        0, 2000, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 
         2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 
-        3900, 4000, 4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 
-        4900, 5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 
-        5900, 6000
+        3900, 4000
     };
     
     int speedIndex = 0; // Starts at 0 RPM
