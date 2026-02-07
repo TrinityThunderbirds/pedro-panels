@@ -35,7 +35,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
  */
 @SuppressWarnings("unused")
 @TeleOp(name = "Field Centric Drive", group = "TeleOp")
-public class totallyFunctioning extends LinearOpMode {
+public class maybeFunctioning extends LinearOpMode {
 
     // =====================================================================
     // CONSTANTS
