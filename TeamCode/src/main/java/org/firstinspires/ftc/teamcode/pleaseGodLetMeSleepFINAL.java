@@ -92,7 +92,7 @@ public class pleaseGodLetMeSleepFINAL extends LinearOpMode {
                 }
             }
             // second intake controls
-            if(gamepad1.b)
+            if(gamepad1.b){
                 if(secondIntakeOn){
                     secondIntakeOn = false;
                     SecondIntake.setPower(0);
