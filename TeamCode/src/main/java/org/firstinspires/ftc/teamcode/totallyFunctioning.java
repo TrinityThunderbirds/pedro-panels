@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @SuppressWarnings("unused")
 @TeleOp
-public class mecanumDebugLauncher extends LinearOpMode {
+public class totallyFunctioning extends LinearOpMode {
 
     // --- TRACKING VARIABLES (DEBOUNCING) ---
     boolean leftBumperPreviouslyPressed = false;
