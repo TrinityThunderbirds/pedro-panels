@@ -37,7 +37,7 @@ import java.util.List;
  * B Button          — Toggle secondary intake on/off
  */
 @SuppressWarnings("unused")
-@TeleOp(name = "Field Centric Drive", group = "TeleOp")
+@TeleOp(name = "Field Centric v2", group = "TeleOp")
 public class idkFunctioning extends LinearOpMode {
 
     // =====================================================================
