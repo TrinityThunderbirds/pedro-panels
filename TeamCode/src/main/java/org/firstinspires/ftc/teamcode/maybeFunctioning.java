@@ -34,7 +34,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
  *   B Button          — Toggle secondary intake on/off
  */
 @SuppressWarnings("unused")
-@TeleOp(name = "Field Centric Drive", group = "TeleOp")
+@TeleOp(name = "Field Centric Original", group = "TeleOp")
 public class maybeFunctioning extends LinearOpMode {
 
     // =====================================================================
