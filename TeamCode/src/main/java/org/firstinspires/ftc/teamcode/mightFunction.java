@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
@@ -12,7 +13,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import java.util.List;
 
 /**
- * FINAL COMPETITION CODE
+ * FINAL COMPETITION CODE (Voltage Compensated)
  * Field-Centric Mecanum TeleOp with Control Hub mounted on 45-degree ramp.
  *
  * CONFIGURATION:
@@ -36,7 +37,7 @@ import java.util.List;
  *   B Button           — Toggle secondary intake on/off
  */
 @SuppressWarnings("unused")
-@TeleOp(name = "Field Centric Experimental", group = "Competition")
+@TeleOp(name = "Field Centric FINAL", group = "Competition")
 public class mightFunction extends LinearOpMode {
 
     // =====================================================================
@@ -47,6 +48,14 @@ public class mightFunction extends LinearOpMode {
     private static final double JOYSTICK_DEADZONE   = 0.05;
     private static final long   IMU_SETTLE_MS       = 3000;
     private static final double PRECISION_MIN_SCALE = 0.5;
+
+    /** Nominal battery voltage used as the baseline for voltage compensation.
+     *  12.5V is a good average for an FTC battery under match load. */
+    private static final double NOMINAL_VOLTAGE     = 12.5;
+
+    /** Maximum voltage compensation multiplier. Prevents dangerous power
+     *  spikes if the battery voltage reads abnormally low. */
+    private static final double MAX_VOLTAGE_MULT    = 1.5;
 
     private static final double[] OUTTAKE_RPM_PRESETS = {
             0, 1500, 2000, 2200, 2300, 2400, 2500, 2600, 2700, 2800,
@@ -95,6 +104,9 @@ public class mightFunction extends LinearOpMode {
         DcMotor rightOuttake    = hardwareMap.dcMotor.get("rightOuttake");
         DcMotor primaryIntake   = hardwareMap.dcMotor.get("intake");
         DcMotor secondaryIntake = hardwareMap.dcMotor.get("SecondIntake");
+
+        // Voltage sensor for outtake compensation
+        VoltageSensor batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // -----------------------------------------------------------------
         // 3. IMU INITIALIZATION
@@ -147,6 +159,13 @@ public class mightFunction extends LinearOpMode {
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
+
+            // -------------------------------------------------------------
+            // VOLTAGE READING
+            // -------------------------------------------------------------
+            double currentVoltage    = batteryVoltageSensor.getVoltage();
+            double voltageMultiplier = NOMINAL_VOLTAGE / currentVoltage;
+            voltageMultiplier = Math.max(0.1, Math.min(voltageMultiplier, MAX_VOLTAGE_MULT));
 
             // -------------------------------------------------------------
             // DRIVE MODE TOGGLE (BACK BUTTON)
@@ -229,8 +248,14 @@ public class mightFunction extends LinearOpMode {
             prevRightBumper = gamepad1.right_bumper;
 
             double outtakeRPM   = OUTTAKE_RPM_PRESETS[outtakeSpeedIndex];
-            leftOuttake.setPower(outtakeRPM / MAX_OUTTAKE_RPM);
-            rightOuttake.setPower(outtakeRPM / MAX_OUTTAKE_RPM);
+            double outtakePower = (outtakeRPM / MAX_OUTTAKE_RPM) * voltageMultiplier;
+
+            // Clamp to [0, 1] — voltage compensation can push above 1.0
+            // if the battery is low and the target RPM is high.
+            outtakePower = Math.min(outtakePower, 1.0);
+
+            leftOuttake.setPower(outtakePower);
+            rightOuttake.setPower(outtakePower);
 
             if (gamepad1.x && !prevX) {
                 primaryIntakeActive = !primaryIntakeActive;
@@ -259,7 +284,10 @@ public class mightFunction extends LinearOpMode {
             telemetry.addData("Speed",     "%.0f%%", speedScale * 100.0);
             telemetry.addData("Loop",      "%.1f ms", loopMs);
             telemetry.addLine();
-            telemetry.addData("Outtake",   "%.0f RPM (%d)", outtakeRPM, outtakeSpeedIndex);
+            telemetry.addData("Battery",   "%.1fV (x%.2f)", currentVoltage, voltageMultiplier);
+            telemetry.addData("Outtake",   "%.0f RPM [%d/%d] -> %.0f%% pwr",
+                    outtakeRPM, outtakeSpeedIndex, OUTTAKE_RPM_PRESETS.length - 1,
+                    outtakePower * 100.0);
             telemetry.addData("Intake 1",  primaryIntakeActive   ? "ON" : "OFF");
             telemetry.addData("Intake 2",  secondaryIntakeActive ? "ON" : "OFF");
             telemetry.update();
