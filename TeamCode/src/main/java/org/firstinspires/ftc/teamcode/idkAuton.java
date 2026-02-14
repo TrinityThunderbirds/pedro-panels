@@ -44,7 +44,7 @@ public class idkAuton extends LinearOpMode {
             // y = 0.5 (Forward power)
             // x = 0.0 (No strafe)
             // rx = 0.0 (No turn)
-            driveMecanum(0.5, 0, 0); 
+            driveMecanum(-0.5, -0.5, 0);
             
             // Run for 1 second
             sleep(1000);

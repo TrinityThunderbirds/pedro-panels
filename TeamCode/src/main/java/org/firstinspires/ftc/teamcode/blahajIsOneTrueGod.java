@@ -156,12 +156,10 @@ public class blahajIsOneTrueGod extends LinearOpMode {
                 }
             }
             bPreviouslyPressed = gamepad1.b;
-
-
             telemetry.addData("Target RPM", outtakeRPMs[speedIndex]);
+            telemetry.addData("Launch Vector", "%.2f", actualLeftRPM-actualRightRPM);
             telemetry.addData("Motor ACTUAL left RPM", "%.2f", actualLeftRPM);
             telemetry.addData("Motor ACTUAL right RPM", "%.2f", actualRightRPM);
-
             telemetry.addData("Speed Level", "%d / %d", speedIndex, outtakeRPMs.length - 1);
             telemetry.addLine();
             telemetry.addData("Intake 1 (X)", firstIntakeActive ? "ON" : "OFF");
