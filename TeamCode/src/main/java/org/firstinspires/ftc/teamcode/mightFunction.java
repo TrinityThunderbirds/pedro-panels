@@ -343,7 +343,7 @@ public class mightFunction extends LinearOpMode {
         return String.format("(%.2f, %.2f, %.2f, %.2f)", q.w, q.x, q.y, q.z);
     }
 
-    private double applyDeadzone(double input, double threshold) {
+    private double applyDeadzone(double inp4ut, double threshold) {
         if (Math.abs(input) < threshold) return 0.0;
         return Math.copySign(
                 (Math.abs(input) - threshold) / (1.0 - threshold),
